@@ -36,7 +36,7 @@ def load_mnist(image_file, label_file, path="."):
         images[i] = array(img[ ind[i]*rows*cols : (ind[i]+1)*rows*cols ]).reshape((1, rows*cols))
         labels[i] = lbl[ind[i]]
     #images = [im/255.0 for im in images]
-    images = [im/255.0 - 0.5 for im in images]
+    #images = [im/255.0 - 0.5 for im in images]
 
     return images, labels
 
@@ -54,46 +54,41 @@ def BP(train_x,train_y):
     W = np.zeros((hiddenNumber,outputNumber)) #隐层到输出层的权重
     V = np.zeros((inputNumber,hiddenNumber)) #输入层到隐层的权重
     delta = np.zeros(outputNumber) #输出层反传误差
-    loopNum = 10
+    loopNum = 1
     currentNum = 0
     for loop in range(loopNum):
+        currentNum = 0
         for tx,ty in zip(train_x,train_y):
-            print(currentNum)
             currentNum += 1
-            if currentNum > 500 and debug: #测试用,python好慢
+            if currentNum > 1000 and debug:
                 break
-
+            print(currentNum)
             X = np.array(tx)
             #重新对准确信息赋值
             for k in range(outputNumber):
-                d[k] = 0.0
-            d[train_y] = 1.0
+                d[k] = 0.0    
 
+            d[ty] = 1.0    
+
+            Y = np.dot(X,V)
             for j in range(hiddenNumber):
-                Y[j] = 0
-                #net_j
-                for i in range(inputNumber):
-                    Y[j] += X[i] * V[i][j]
-                Y[j] = func(Y[j])
-            
+                Y[j] = func(Y[j])    
+
+            O = np.dot(Y,W)
             for k in range(outputNumber):
-                O[k] = 0
-                #net_k
-                for j in range(hiddenNumber):
-                    O[k] += Y[j]*W[j][k]
                 O[k] = func(O[k])
-                delta[k] = (d[k] - O[k])*O[k]*(1-O[k])
+                delta[k] = (d[k] - O[k])*O[k]*(1-O[k])    
 
             for j in range(hiddenNumber):
                 for k in range(outputNumber):
-                    W[j][k] += eta*delta[k]*Y[j]
-            
+                    W[j][k] += eta*delta[k]*Y[j]    
+
             for j in range(hiddenNumber):
                 sum = 0
                 for k in range(outputNumber):
                     sum += delta[k]*W[j][k]
                 for i in range(inputNumber):
-                    V[i][j] += eta*sum*Y[j]*(1-Y[j])*X[i]
+                    V[i][j] += eta*sum*Y[j]*(1-Y[j])*X[i]    
 
     return (V,W)
 
@@ -130,14 +125,31 @@ def test(test_x,test_y,V,W):
         if k == ty:
             ac_num += 1
     return ac_num / num
-        
-
-
 
 
 if __name__ == "__main__":
     train_image, train_label = load_mnist("train-images.idx3-ubyte", "train-labels.idx1-ubyte")
     test_image, test_label = load_mnist("t10k-images.idx3-ubyte", "t10k-labels.idx1-ubyte")
+    f1 = open("train_image","w")
+    for image in train_image:
+        for x in image:
+            f1.write(str(x)+" ")
+        f1.write("\n")
+    f1.close()
+    f2 = open("train_label","w")
+    for label in train_label:
+        f2.write(str(label)+"\n")
+    f3 = open("test_image","w")
+    for image in test_image:
+        for x in image:
+            f3.write(str(x)+" ")
+        f3.write("\n")
+    f3.close()
+    f4 = open("test_label","w")
+    for label in test_label:
+        f4.write(str(label)+"\n")
+    f4.close()
+    '''
     print("读取数据集完毕")
     t1 = time()
     V,W = BP(train_image,train_label)
@@ -145,3 +157,4 @@ if __name__ == "__main__":
     print("训练时间",t2-t1)
     ac = test(test_image,test_label,V,W)
     print("测试准确率：",ac)
+    '''

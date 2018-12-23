@@ -94,7 +94,7 @@ void BPnet::update()
     {
         for(int j = 0;j<HID_NUM;j++)
         {
-            V[i][j] += ALPHA * etajy[j] * IN_NUM[i];
+            V[i][j] += ALPHA * etajy[j] * input[i];
         }
     }
 }

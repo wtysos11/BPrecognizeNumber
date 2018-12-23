@@ -5,8 +5,9 @@
 
 using namespace std;
 
-#define TRAIN_NUM 60000
-#define TEST_NUM 10000
+#define TRAIN_NUM 60000 //60000
+#define TEST_NUM 10000 //10000
+#define TRAINING_TIMES 10
 
 int main(void)
 {
@@ -33,14 +34,15 @@ int main(void)
     tr_label.close();
 //进行训练
 //多次训练，对于每一个训练数据
-    int times = 100;
+    int times = TRAINING_TIMES;
     BPnet bp;
     bp.init();//初始化各个参数
     for(int n = 0;n<times;n++)
     {
+        cout<<n<<" "<<time(NULL)<<endl;
 //读入，初始化BPnet的输入层与标准输出
         for(int m = 0;m<TRAIN_NUM;m++)
-        {  
+        {
             bp.setData(train_image[m],train_label[m]);
 //前向传播
             bp.forward();
@@ -77,7 +79,7 @@ int main(void)
     int ac_num = 0;
     for(int m = 0;m<TEST_NUM;m++)
     {
-        bp.setData()
+        bp.setData(test_image[m],test_label[m]);
         bool isOk = bp.predict();
         if(isOk)
         {
